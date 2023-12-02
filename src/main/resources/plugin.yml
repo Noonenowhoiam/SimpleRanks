@@ -1,0 +1,4 @@
+name: simpleranks
+version: '${project.version}'
+main: simpleranks.Simpleranks
+api-version: '1.20'
