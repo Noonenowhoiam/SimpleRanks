@@ -2,3 +2,13 @@ name: simpleranks
 version: '${project.version}'
 main: simpleranks.Simpleranks
 api-version: '1.20'
+permissions:
+  simpleranks.rank.change:
+    description: This is the SimplerRanks permission to edit a Players rank!
+    default: op
+  simpleranks.rank.manage:
+    description: This is the SimpleRanks permission to add/remove/edit ranks!
+    default: op
+  simpleranks.admin:
+    description: This is the SimpleRanks admin Permission! Warning don`t add this permission to all players!
+    default: op
