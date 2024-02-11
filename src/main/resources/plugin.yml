@@ -2,13 +2,17 @@ name: simpleranks
 version: '${project.version}'
 main: simpleranks.Simpleranks
 api-version: '1.20'
+
+commands:
+  simpleranks:
+    description: Mit diesem Command kannst du dein komplettes Plugin managen!
+    aliases:
+      - sr
+
 permissions:
-  simpleranks.rank.change:
-    description: This is the SimplerRanks permission to edit a Players rank!
+  simpleranks.config:
     default: op
-  simpleranks.rank.manage:
-    description: This is the SimpleRanks permission to add/remove/edit ranks!
+  simpleranks.rank.get:
     default: op
-  simpleranks.admin:
-    description: This is the SimpleRanks admin Permission! Warning don`t add this permission to all players!
+  simpleranks.rank.set:
     default: op

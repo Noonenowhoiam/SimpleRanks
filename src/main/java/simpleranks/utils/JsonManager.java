@@ -23,36 +23,43 @@ public class JsonManager {
     public JsonObject jsonObject() { return jsonObject; }
 
     public JsonManager addProperty(String key, String value) {
+        removeProperty(key);
         jsonObject.addProperty(key, value);
         return this;
     }
 
     public JsonManager addProperty(String key, Number value) {
+        removeProperty(key);
         jsonObject.addProperty(key, value);
         return this;
     }
 
     public JsonManager addProperty(String key, Boolean value) {
+        removeProperty(key);
         jsonObject.addProperty(key, value);
         return this;
     }
 
     public JsonManager addProperty(String key, JsonObject value) {
+        removeProperty(key);
         jsonObject.add(key, value);
         return this;
     }
 
     public JsonManager addProperty(String key, JsonArray value) {
+        removeProperty(key);
         jsonObject.add(key, value);
         return this;
     }
 
     public JsonManager addProperty(String key, JsonManager value) {
+        removeProperty(key);
         jsonObject.add(key, value.jsonObject);
         return this;
     }
 
     public JsonManager addProperty(String key, List<?> values) {
+        removeProperty(key);
         JsonArray jsonArray = new JsonArray();
         for (Object value : values) {
             if (value instanceof String) {
@@ -67,6 +74,11 @@ public class JsonManager {
             // Add more conditions for other data types if needed
         }
         jsonObject.add(key, jsonArray);
+        return this;
+    }
+
+    public JsonManager removeProperty(String key) {
+        jsonObject.remove(key);
         return this;
     }
 

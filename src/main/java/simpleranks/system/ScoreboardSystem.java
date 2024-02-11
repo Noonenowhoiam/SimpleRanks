@@ -12,6 +12,9 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import simpleranks.utils.PlayerRank;
+import simpleranks.utils.config.DefaultConfiguration;
+import simpleranks.utils.config.PlayerConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,28 +35,29 @@ public class ScoreboardSystem {
     }
 
     public void loadMain() {
-        /*
-        Rank rank = new PlugPlayer(uuid).getRank();
+        PlayerConfiguration conf = PlayerConfiguration.getFor(uuid);
 
         scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-        scoreboard.getTeams().forEach(team -> team.unregister());
-        for (Rank this_rank : Rank.values()) {
+        scoreboard.getTeams().forEach(team -> { team.unregister(); });
+
+        if (!DefaultConfiguration.teamRankEnabled.get()) return;
+
+        for (PlayerRank this_rank : PlayerRank.ranks()) {
             Team t = scoreboard.registerNewTeam(this_rank.teamName());
-            t.prefix(Component.text(this_rank.color() + this_rank.rankname() + Rank.split));
+            t.prefix(Component.text(this_rank.color() + this_rank.displayName() + "§8 " + DefaultConfiguration.teamRankSeparator.get() + " §7"));
             t.setColor(ChatColor.getByChar('7'));
         }
 
-        scoreboard.getTeam(rank.teamName()).addPlayer(Bukkit.getOfflinePlayer(uuid));
+        scoreboard.getTeam(conf.getRank().teamName()).addPlayer(Bukkit.getOfflinePlayer(uuid));
 
         for (Player this_player : Bukkit.getOnlinePlayers()) {
             if (this_player.getUniqueId() == uuid) continue;
-            Rank this_rank = new PlugPlayer(this_player.getUniqueId()).getRank();
+            PlayerRank this_rank = PlayerConfiguration.getFor(this_player).getRank();
             scoreboard.getTeam(this_rank.teamName()).addPlayer(this_player);
         }
 
         Bukkit.getPlayer(uuid).setScoreboard(scoreboard);
-        * */
     }
 
     public void reload() {
@@ -74,7 +78,14 @@ public class ScoreboardSystem {
     }
 
     public static void playerChatEvent(AsyncPlayerChatEvent e) {
+        if (!DefaultConfiguration.chatRankEnabled.get()) return;
 
+        PlayerConfiguration conf = PlayerConfiguration.getFor(e.getPlayer());
+        PlayerRank rank = conf.getRank();
+
+        String format = DefaultConfiguration.chatRankFormat.get().replace("&", "§");
+        String message = format.replace("{rank_color}", rank.color()).replace("{rank_dpname}", rank.displayName()).replace("{player_name}", e.getPlayer().getName()).replace("{message}", e.getMessage());
+        e.setFormat(message);
     }
 
     public static void playerJoinEvent(PlayerJoinEvent e) {
@@ -82,7 +93,7 @@ public class ScoreboardSystem {
     }
 
     public static void playerLeaveEvent(PlayerQuitEvent e) {
-        loggedScoreboards.remove(e.getPlayer().getUniqueId());
+        if (loggedScoreboards.containsKey(e.getPlayer().getUniqueId())) { loggedScoreboards.remove(e.getPlayer().getUniqueId()); }
         reloadAll();
     }
 

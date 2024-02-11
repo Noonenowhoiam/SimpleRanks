@@ -1,13 +1,16 @@
 package simpleranks.utils.config;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import simpleranks.utils.JsonManager;
 
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 
 public class ConfigValue<T> {
     private final Path path;
@@ -20,14 +23,56 @@ public class ConfigValue<T> {
         this.path = filePath;
     }
 
+    public void set(T value) {
+        JsonManager jsonManager = new JsonManager();
+        String json;
+
+        try {
+            json = Files.readString(path, StandardCharsets.UTF_8);
+            jsonManager = new JsonManager(json);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String[] spjson = key.split("\\.");
+        JsonObject currentObject = jsonManager.jsonObject();
+
+        for (int i = 0; i < spjson.length - 1; i++) {
+            String currentKey = spjson[i];
+            if (!currentObject.has(currentKey) || !currentObject.get(currentKey).isJsonObject()) {
+                currentObject.add(currentKey, new JsonObject());
+            }
+            currentObject = currentObject.getAsJsonObject(currentKey);
+        }
+
+        String finalKey = spjson[spjson.length - 1];
+        if (value instanceof JsonObject && currentObject.has(finalKey) && currentObject.get(finalKey).isJsonObject()) {
+            JsonObject existingObject = currentObject.getAsJsonObject(finalKey);
+            JsonObject newValueObject = (JsonObject) value;
+            for (Map.Entry<String, JsonElement> entry : newValueObject.entrySet()) {
+                existingObject.add(entry.getKey(), entry.getValue());
+            }
+            currentObject.add(finalKey, existingObject);
+        } else {
+            currentObject.add(finalKey, new Gson().toJsonTree(value));
+        }
+
+        try {
+            Files.writeString(path, JsonManager.makePrettier(jsonManager.toJsonString()), StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public T get() {
         JsonManager jsonManager = new JsonManager();
         String json;
         try {
-            json = Files.readString(path);
+            json = Files.readString(path, StandardCharsets.UTF_8);
             jsonManager = new JsonManager(json);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error reading JSON file", e);
+            e.printStackTrace();
         }
 
         String[] spjson = key.split("\\.");
