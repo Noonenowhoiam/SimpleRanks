@@ -14,6 +14,10 @@ import simpleranks.utils.Prefix;
 import simpleranks.utils.config.DefaultConfiguration;
 import simpleranks.utils.config.PlayerConfiguration;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 public class SimpleRanksCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
@@ -30,7 +34,10 @@ public class SimpleRanksCommand implements CommandExecutor {
                 if (!PlayerRank.isRankExistent(config_value)) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der von dir angegebene Rang existiert §cnicht§7!"); return true; }
                 DefaultConfiguration.defaultRank.set(config_value);
                 PlayerRank rank = PlayerRank.get(config_value);
-                commandSender.sendMessage(Prefix.SYSTEM.def() + "Du hast den Rang " + rank.color() + rank.displayName() + " §7 erfolgreich als §aStandart Rang§7 hinterlegt!");
+
+                PlayerRank.resortRanks();
+
+                commandSender.sendMessage(Prefix.SYSTEM.def() + "Du hast den Rang " + rank.color() + rank.displayName() + "§7 erfolgreich als §aStandart Rang§7 hinterlegt!");
                 return true;
             }
 
@@ -60,7 +67,13 @@ public class SimpleRanksCommand implements CommandExecutor {
             }
 
             if (config_key.equals("teamSeperator")) {
-                if (config_value.length() > 4) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der Seperator darf §cmaximal 4 zeichen§7 lang sein!"); return true; }
+                String value_without_colorcodes = config_value;
+                for (String c : PlayerRank.colors()) { value_without_colorcodes = value_without_colorcodes.replace("&" + c, ""); }
+
+                if (value_without_colorcodes.length() > 4) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der Seperator darf §cmaximal 4 zeichen§7 lang sein!"); return true; }
+
+                config_value = config_value.replace("&", "§");
+
                 DefaultConfiguration.teamRankSeparator.set(config_value);
                 commandSender.sendMessage(Prefix.SYSTEM.def() + "Der Team Seperator ist nun §a" + config_value + "§7!");
                 ScoreboardSystem.reloadAll();
@@ -90,13 +103,26 @@ public class SimpleRanksCommand implements CommandExecutor {
             if (strings.length < 2) { sendHelp(commandSender); return true; }
             String option2 = strings[1];
 
+            if (option2.equals("list")) {
+                List<PlayerRank> ranks = new ArrayList<>(PlayerRank.ranks());
+                ranks.sort(Comparator.comparing(PlayerRank::position));
+
+                commandSender.sendMessage("");
+                commandSender.sendMessage(Prefix.SYSTEM.def() + "§a§lAlle Ränge:§r");
+                for (PlayerRank rank : ranks) {
+                    commandSender.sendMessage(Prefix.SYSTEM.def() + rank.position() + " - " + rank.color() + rank.displayName() + "§7");
+                }
+                commandSender.sendMessage("");
+                return true;
+            }
+
             if (option2.equals("create")) {
                 if (PlayerRank.ranks().size() > 50) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der Server hat die §cMaximale§7 Anzahl an Rängen erreicht!"); return true; }
                 if (strings.length < 4) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Bitte gib einen §anamen§7 und eine §afarbe§7 an! Usage: /sr rank create <displayName> <farbe>"); return true; }
                 String dpName = strings[2];
                 String color = strings[3];
 
-                if (dpName.length() > 15) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der angegebene Name ist zu lang! Bitte nutze §cmaximal 15 zeichen§7!"); return true; }
+                if (dpName.length() > 30) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der angegebene Name ist zu lang! Bitte nutze §cmaximal 30 zeichen§7!"); return true; }
                 if (color.length() > 1) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Die farbe muss ein §ceinzelner Buchstabe§7 sein!"); return true; }
                 if (!"4c6e2ab319d5f780".contains(color)) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Die angegebene Farbe §cexistiert nicht§7!"); return true; }
                 if (PlayerRank.isRankExistent(dpName)) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Ein Rang mir den Namen §c" + dpName + "§7 existiert bereits!"); return true; }
@@ -114,7 +140,9 @@ public class SimpleRanksCommand implements CommandExecutor {
                 if (DefaultConfiguration.defaultRank.get().equals(dpName)) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Du kannst den §cDefault Rank§7 nicht löschen! Ändere ihn in den Configs!"); return true; }
 
                 PlayerRank.deleteRank(PlayerRank.get(dpName).id());
+                PlayerRank.resortRanks();
                 ScoreboardSystem.reloadAll();
+
                 commandSender.sendMessage(Prefix.SYSTEM.def() + "Du hast den Rang §a" + dpName + "§7 erfolgreich §cgelöscht§7!");
                 return true;
             }
@@ -126,12 +154,60 @@ public class SimpleRanksCommand implements CommandExecutor {
                 if (!PlayerRank.isRankExistent(rankName)) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der angegebene §cRang§7 existiert nicht!"); return true; }
                 if (strings.length < 4) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Bitte gib eine §aOption§7 an die du modifizieren möchtest!"); return true; }
                 String option3_key = strings[3];
-                if (strings.length < 5) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Bitte gib eine §aValue§7 an!"); return true; }
-                String option3_value = strings[4];
 
                 if (DefaultConfiguration.defaultRank.get().equals(rankName)) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Du kannst den §cDefault Rank§7 nicht modifizieren! Ändere ihn in den Configs!"); return true; }
 
+                if (option3_key.equals("moveDown")) {
+                    PlayerRank rank = PlayerRank.get(rankName);
+                    System.out.println(PlayerRank.ranks().size() - 2);
+                    if (rank.position() > PlayerRank.ranks().size() - 3) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der Rang befindet sich bereits ganz §cunten§7!"); return true; }
+                    if (PlayerRank.get(rank.position()-1).position() == 10000) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der Rang befindet sich bereits ganz §cunten§7!"); return true; }
+
+                    PlayerRank upRank = PlayerRank.get(rank.position() + 1);
+                    upRank.setPosition(upRank.position() -1);
+
+                    rank.setPosition(rank.position() +1);
+
+                    PlayerRank downRank = PlayerRank.get(rank.position() +1);
+
+                    String ranks = "§8...§7, ";
+                    if (upRank.position() != 10000) { ranks += upRank.color() + upRank.displayName() + "§7, "; } else { ranks += "§0Keiner§7, "; }
+                    ranks += rank.color() + rank.displayName() + "§7, ";
+                    if (downRank.position() != 10000) { ranks += downRank.color() + downRank.displayName() + "§7, "; } else { ranks += "§0Keiner§7, "; }
+                    ranks += "§8...§7";
+
+                    commandSender.sendMessage(Prefix.SYSTEM.def() + "Du hast den Rang " + rank.color() + rank.displayName() + "§7 auf die Position §c" + rank.position() + "§7 nach unten verschoben! " + ranks);
+                    ScoreboardSystem.reloadAll();
+                    return true;
+                }
+
+                if (option3_key.equals("moveUp")) {
+                    PlayerRank rank = PlayerRank.get(rankName);
+                    if (rank.position() < 1) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der Rang befindet sich bereits ganz §coben§7!"); return true; }
+
+                    PlayerRank downRank = PlayerRank.get(rank.position() - 1);
+                    downRank.setPosition(downRank.position() +1);
+
+                    rank.setPosition(rank.position() -1);
+
+                    PlayerRank upRank = PlayerRank.get(rank.position() - 1);
+
+                    String ranks = "§8...§7, ";
+                    if (upRank.position() != 10000) { ranks += upRank.color() + upRank.displayName() + "§7, "; } else { ranks += "§0Keiner§7, "; }
+                    ranks += rank.color() + rank.displayName() + "§7, ";
+                    if (downRank.position() != 10000) { ranks += downRank.color() + downRank.displayName() + "§7, "; } else { ranks += "§0Keiner§7, "; }
+                    ranks += "§8...§7";
+
+                    commandSender.sendMessage(Prefix.SYSTEM.def() + "Du hast den Rang " + rank.color() + rank.displayName() + "§7 auf die Position §a" + rank.position() + "§7 nach oben verschoben! " + ranks);
+                    ScoreboardSystem.reloadAll();
+                    return true;
+                }
+
+                if (strings.length < 5) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Bitte gib eine §aValue§7 an!"); return true; }
+                String option3_value = strings[4];
+
                 if (option3_key.equals("setDisplayName")) {
+                    if (option3_value.length() > 30) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der angegebene Name ist zu lang! Bitte nutze §cmaximal 30 zeichen§7!"); return true; }
                     if (PlayerRank.isRankExistent(option3_value)) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Es existiert bereits ein Rang mit dem Namen §c" + option3_value + "§7!"); return true; }
                     PlayerRank.get(rankName).setDisplayName(option3_value);
                     commandSender.sendMessage(Prefix.SYSTEM.def() + "Du hast den Namen des Ranges §c" + rankName + "§7 zu §a" + option3_value + "§7 geändert!");
@@ -148,6 +224,8 @@ public class SimpleRanksCommand implements CommandExecutor {
                     ScoreboardSystem.reloadAll();
                     return true;
                 }
+
+                commandSender.sendMessage(Prefix.SYSTEM.err() + "Der modify Option §c" + option3_key + "§7 wurde nicht gefunden!");
                 return true;
             }
 
@@ -175,6 +253,15 @@ public class SimpleRanksCommand implements CommandExecutor {
     }
 
     public void sendHelp(CommandSender s) {
-        s.sendMessage("Help");
+        s.sendMessage("");
+        s.sendMessage("§a§lHelp:");
+        s.sendMessage(Prefix.SYSTEM.def() + "/sr rank create <name> <color> §8-§7 create a new rank");
+        s.sendMessage(Prefix.SYSTEM.def() + "/sr rank delete <name> §8-§7 delete a rank");
+        s.sendMessage(Prefix.SYSTEM.def() + "/sr rank info <name> §8-§7 get the info of Rank");
+        s.sendMessage(Prefix.SYSTEM.def() + "/sr modify <name> <moveUp/moveDown> §8-§7 move a rank position up and down");
+        s.sendMessage(Prefix.SYSTEM.def() + "/sr modify <name> <key> <value> §8-§7 modify a ranks data");
+        s.sendMessage(Prefix.SYSTEM.def() + "/sr list §8-§7 get a list of all ranks");
+        s.sendMessage(Prefix.SYSTEM.def() + "/sr config <key> <value> §8-§7 edit config");
+        s.sendMessage("");
     }
 }

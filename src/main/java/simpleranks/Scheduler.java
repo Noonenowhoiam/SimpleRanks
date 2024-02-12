@@ -2,6 +2,7 @@ package simpleranks;
 
 import org.bukkit.Bukkit;
 import simpleranks.system.ScoreboardSystem;
+import simpleranks.utils.PlayerRank;
 
 public final class Scheduler {
 
@@ -53,6 +54,7 @@ public final class Scheduler {
     }
     public static void start30SecondScheduler() {
         start30SecondScheduler = Bukkit.getScheduler().scheduleSyncRepeatingTask(Simpleranks.instance, () -> {
+            PlayerRank.resortRanks();
             ScoreboardSystem.reloadAll();
         }, 0, 30 * ONE_SECOND);
     }

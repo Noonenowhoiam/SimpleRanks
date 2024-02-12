@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>simpleranks</groupId>
-    <artifactId>simpleranksbysilal</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>simpleranks</artifactId>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>simpleranks</name>

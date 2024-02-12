@@ -54,4 +54,11 @@ public class Database {
         } catch (Exception e) { System.err.println("[DATABASE] fehler beim Erstellen des Datenbank files '" + databasePath + "'!"); }
     }
 
+    public static void shutdown() {
+        try {
+            databaseConnection.close();
+            database.close();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
 }

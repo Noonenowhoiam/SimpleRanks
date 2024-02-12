@@ -6,6 +6,7 @@ import simpleranks.utils.config.ConfigValue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -30,16 +31,16 @@ public class DefaultConfiguration {
 
                 JsonManager defaultJson = new JsonManager();
 
-                defaultJson.addProperty("defaultRank", "default");
+                defaultJson.addProperty("defaultRank", "Player");
                 defaultJson.addProperty("rank", new JsonManager()
-                        .addProperty("chatFormat", "{rank_color}{rank_dpname} &8>>&7 {player_name} &8>>&7 {message}")
+                        .addProperty("chatFormat", "{rank_color}{rank_dpname} &8»&7 {player_name}&8:&7 {message}")
                         .addProperty("chatRank", true)
-                        .addProperty("teamSeparator", ">>")
+                        .addProperty("teamSeparator", "»")
                         .addProperty("teamRank", true)
                 );
 
                 try {
-                    Files.write(configFile.toPath(), JsonManager.makePrettier(defaultJson.toJsonString()).getBytes(), StandardOpenOption.CREATE);
+                    Files.writeString(configFile.toPath(), JsonManager.makePrettier(defaultJson.toJsonString()), StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
                 } catch (IOException e) { throw new RuntimeException(e); }
             } catch (IOException e) { throw new RuntimeException(e); }
         }

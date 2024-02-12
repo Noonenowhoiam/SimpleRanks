@@ -1,9 +1,12 @@
 package simpleranks;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import simpleranks.commands.RankCommand;
 import simpleranks.commands.SimpleRanksCommand;
+import simpleranks.commands.tabcomplete.RankCommandTabComplete;
+import simpleranks.commands.tabcomplete.SimpleRanksComandTabComplete;
 import simpleranks.listeners.PlayerChatListener;
 import simpleranks.listeners.PlayerJoinListener;
 import simpleranks.listeners.PlayerLeaveListener;
@@ -34,9 +37,9 @@ public final class Simpleranks extends JavaPlugin {
         initListeners();
         initCommands();
         initFiles();
+        DefaultConfiguration.init();
         Database.init();
         PlayerRank.init();
-        DefaultConfiguration.init();
         ScoreboardSystem.reloadAll();
 
         Scheduler.start();
@@ -51,12 +54,16 @@ public final class Simpleranks extends JavaPlugin {
 
     public void initCommands() {
         getCommand("simpleranks").setExecutor(new SimpleRanksCommand());
+        getCommand("simpleranks").setTabCompleter(new SimpleRanksComandTabComplete());
         getCommand("rank").setExecutor(new RankCommand());
+        getCommand("rank").setTabCompleter(new RankCommandTabComplete());
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        Database.shutdown();
+        Scheduler.stop();
     }
 
     public void initFiles() {

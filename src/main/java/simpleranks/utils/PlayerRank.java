@@ -7,6 +7,7 @@ import simpleranks.utils.config.PlayerConfiguration;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -24,10 +25,18 @@ public class PlayerRank extends Database {
         while (ranks.contains(id)) { id = new Random().nextLong(); id = Math.abs(id) % 10000000000000000L; }
 
         int position = PlayerRank.ranks().size();
+        if (dpn.equals(DefaultConfiguration.defaultRank.get())) {
+            position = 1000;
+        } else {
+            if (!PlayerRank.rankNames().isEmpty()) {
+                if (PlayerRank.rankNames().contains(getDefaultRank().displayName())) { position = position-1; }
+            }
+        }
 
         try {
             database.executeUpdate("INSERT INTO " + ranksDataTable + " (`id`, `displayName`, `color`, `position`) VALUES ('" + id + "', '" + dpn + "', '" + color + "', '" + position + "')");
         } catch (Exception e) { e.printStackTrace(); }
+        resortRanks();
         return PlayerRank.get(id);
     }
 
@@ -53,6 +62,18 @@ public class PlayerRank extends Database {
         return PlayerRank.getDefaultRank();
     }
 
+    public static PlayerRank get(int position) {
+        try {
+            ResultSet rs = database.executeQuery("SELECT * FROM " + ranksDataTable + " WHERE position = '" + position + "';");
+            String temp_id = null; if (rs.next()) { temp_id = rs.getString("id"); }
+            rs.close();
+            if (temp_id == null) return PlayerRank.getDefaultRank();
+            if (!JavaTools.isLong(temp_id)) return PlayerRank.getDefaultRank();
+            return PlayerRank.get(Long.valueOf(temp_id));
+        } catch (Exception e) { e.printStackTrace(); }
+        return PlayerRank.getDefaultRank();
+    }
+
 
     public long id() { return id; }
     public String displayName() {
@@ -66,10 +87,11 @@ public class PlayerRank extends Database {
         return null;
     }
 
-    public void setDisplayName(String name) {
+    public PlayerRank setDisplayName(String name) {
         try {
             database.executeUpdate("UPDATE " + ranksDataTable + " SET displayName = '" + name + "' WHERE id = '" + id + "';");
         } catch (Exception e) { e.printStackTrace(); }
+        return this;
     }
     public String teamName() {
         int pos = position();
@@ -91,10 +113,11 @@ public class PlayerRank extends Database {
         } catch (Exception e) { e.printStackTrace(); }
         return 99999;
     }
-    public void setPosition(int pos) {
+    public PlayerRank setPosition(int pos) {
         try {
             database.executeUpdate("UPDATE " + ranksDataTable + " SET position = '" + pos + "' WHERE id = '" + id + "';");
         } catch (Exception e) { e.printStackTrace(); }
+        return this;
     }
 
     public String color() {
@@ -107,10 +130,11 @@ public class PlayerRank extends Database {
         } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
-    public void setColor(String color) {
+    public PlayerRank setColor(String color) {
         try {
             database.executeUpdate("UPDATE " + ranksDataTable + " SET color = '" + color + "' WHERE id = '" + id + "';");
         } catch (Exception e) { e.printStackTrace(); }
+        return this;
     }
 
 
@@ -132,6 +156,7 @@ public class PlayerRank extends Database {
         List<Long> re = new ArrayList<>();
         try {
             ResultSet rs = database.executeQuery("SELECT * FROM " + ranksDataTable + ";");
+            if (!rs.next()) return re;
             while (rs.next()) {
                 String tmp_id = rs.getString("id");
                 if (tmp_id == null) continue;
@@ -156,8 +181,16 @@ public class PlayerRank extends Database {
         return re;
     }
 
+    public static List<String> colors() {
+        return List.of("4", "c", "6", "e", "2", "a", "b", "3", "1", "9", "d", "5", "f", "7", "8", "9");
+    }
+
     public static PlayerRank getDefaultRank() {
-        return get(DefaultConfiguration.defaultRank.get());
+        if (!isRankExistent(DefaultConfiguration.defaultRank.get())) {
+            return newRank(DefaultConfiguration.defaultRank.get(), "f").setPosition(10000);
+        } else {
+            return PlayerRank.get(DefaultConfiguration.defaultRank.get()).setPosition(10000);
+        }
     }
 
 
@@ -182,9 +215,20 @@ public class PlayerRank extends Database {
         return false;
     }
 
+
+    public static void resortRanks() {
+        List<PlayerRank> ranks = new ArrayList<>(PlayerRank.ranks());
+        ranks.sort(Comparator.comparing(PlayerRank::position));
+        for (int i = 0; i < ranks.size(); i++) {
+            PlayerRank r = ranks.get(i);
+            if (r.displayName().equals(getDefaultRank().displayName())) continue;
+            r.setPosition(i);
+        }
+    }
+
     public static void init() {
         try {
-            if (!isRankExistent(1)) { database.executeUpdate("INSERT INTO " + ranksDataTable + " (`id`, `displayName`, `shortName`, `color`, `position`) VALUES ('1', 'default', 'def', 'f', '1')"); }
+            getDefaultRank();
         } catch (Exception e) { e.printStackTrace(); }
     }
 }
