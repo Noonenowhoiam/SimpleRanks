@@ -36,6 +36,7 @@ public final class Simpleranks extends JavaPlugin {
 
         getLogger().info("Loaded all ranks: " + PlayerRank.rankNames());
         getLogger().info("Starting up...");
+        getLogger().info("Testing...");
 
         getLogger().info("Successful started Plugin version " + getPluginMeta().getVersion() + "!");
         getLogger().info("Plugin created by - " + getPluginMeta().getAuthors());
