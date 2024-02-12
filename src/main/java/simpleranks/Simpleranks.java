@@ -1,6 +1,5 @@
 package simpleranks;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import simpleranks.commands.RankCommand;
@@ -12,18 +11,10 @@ import simpleranks.listeners.PlayerJoinListener;
 import simpleranks.listeners.PlayerLeaveListener;
 import simpleranks.system.ScoreboardSystem;
 import simpleranks.utils.Database;
-import simpleranks.utils.JsonManager;
 import simpleranks.utils.PlayerRank;
-import simpleranks.utils.config.ConfigValue;
 import simpleranks.utils.config.DefaultConfiguration;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Map;
 
 public final class Simpleranks extends JavaPlugin {
 
@@ -38,9 +29,16 @@ public final class Simpleranks extends JavaPlugin {
         initCommands();
         initFiles();
         DefaultConfiguration.init();
+        //Language.init();
         Database.init();
         PlayerRank.init();
         ScoreboardSystem.reloadAll();
+
+        getLogger().info("Loaded all ranks: " + PlayerRank.rankNames());
+        getLogger().info("Starting up...");
+
+        getLogger().info("Successful started Plugin version " + getPluginMeta().getVersion() + "!");
+        getLogger().info("Plugin created by - " + getPluginMeta().getAuthors());
 
         Scheduler.start();
     }

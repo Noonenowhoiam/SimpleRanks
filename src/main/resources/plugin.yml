@@ -2,6 +2,8 @@ name: SimpleRanks
 version: '${project.version}'
 main: simpleranks.Simpleranks
 api-version: '1.20'
+authors:
+  - Silal
 
 commands:
   simpleranks:
@@ -17,6 +19,8 @@ permissions:
   simpleranks.playerrank.get:
     default: op
   simpleranks.playerrank.set:
+    default: op
+  simpleranks.playerrank.set.all:
     default: op
   simpleranks.rank.create:
     default: op
