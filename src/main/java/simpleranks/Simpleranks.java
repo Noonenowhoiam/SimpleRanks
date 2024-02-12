@@ -2,6 +2,7 @@ package simpleranks;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import simpleranks.commands.RankCommand;
 import simpleranks.commands.SimpleRanksCommand;
 import simpleranks.listeners.PlayerChatListener;
 import simpleranks.listeners.PlayerJoinListener;
@@ -50,6 +51,7 @@ public final class Simpleranks extends JavaPlugin {
 
     public void initCommands() {
         getCommand("simpleranks").setExecutor(new SimpleRanksCommand());
+        getCommand("rank").setExecutor(new RankCommand());
     }
 
     @Override

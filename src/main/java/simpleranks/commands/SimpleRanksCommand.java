@@ -91,6 +91,7 @@ public class SimpleRanksCommand implements CommandExecutor {
             String option2 = strings[1];
 
             if (option2.equals("create")) {
+                if (PlayerRank.ranks().size() > 50) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der Server hat die §cMaximale§7 Anzahl an Rängen erreicht!"); return true; }
                 if (strings.length < 4) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Bitte gib einen §anamen§7 und eine §afarbe§7 an! Usage: /sr rank create <displayName> <farbe>"); return true; }
                 String dpName = strings[2];
                 String color = strings[3];
@@ -147,6 +148,22 @@ public class SimpleRanksCommand implements CommandExecutor {
                     ScoreboardSystem.reloadAll();
                     return true;
                 }
+                return true;
+            }
+
+            if (option2.equals("info")) {
+                if (strings.length < 3) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Du musst einen §cRang§7 angeben!"); return true; }
+                String rankName = strings[2];
+                if (!PlayerRank.isRankExistent(rankName)) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Der angegebene Rang existiert §cnicht§7!"); return true; }
+                PlayerRank rank = PlayerRank.get(rankName);
+
+                commandSender.sendMessage("");
+                commandSender.sendMessage(Prefix.SYSTEM.def() + "§a§lInformationen über den rang \"" + rank.displayName() + "\":");
+                commandSender.sendMessage(Prefix.SYSTEM.def() + "DisplayName: " + rank.displayName());
+                commandSender.sendMessage(Prefix.SYSTEM.def() + "Id: " + rank.id());
+                commandSender.sendMessage(Prefix.SYSTEM.def() + "Farbe: " + rank.color().replace("§", ""));
+                commandSender.sendMessage("");
+                return true;
             }
 
             commandSender.sendMessage(Prefix.SYSTEM.err() + "Die von dir angegebene Rank option §cexistiert nicht§7!");

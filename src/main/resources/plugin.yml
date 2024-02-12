@@ -8,6 +8,8 @@ commands:
     description: Mit diesem Command kannst du dein komplettes Plugin managen!
     aliases:
       - sr
+  rank:
+    description: Mit diesem Command kannst du den Rang eines Spielers aktualisieren/abrufen!
 
 permissions:
   simpleranks.config:

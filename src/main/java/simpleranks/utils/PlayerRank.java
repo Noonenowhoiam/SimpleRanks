@@ -23,13 +23,10 @@ public class PlayerRank extends Database {
         List<Long> ranks = PlayerRank.rankIds();
         while (ranks.contains(id)) { id = new Random().nextLong(); id = Math.abs(id) % 10000000000000000L; }
 
-        StringBuilder replacedStringBuilder = new StringBuilder();
-        for (int i = 0; i < PlayerRank.ranks().size(); i++) {
-            replacedStringBuilder.append('9');
-        }
+        int position = PlayerRank.ranks().size();
 
         try {
-            database.executeUpdate("INSERT INTO " + ranksDataTable + " (`id`, `displayName`, `color`, `position`) VALUES ('" + id + "', '" + dpn + "', '" + color + "', '" + replacedStringBuilder.toString() + "')");
+            database.executeUpdate("INSERT INTO " + ranksDataTable + " (`id`, `displayName`, `color`, `position`) VALUES ('" + id + "', '" + dpn + "', '" + color + "', '" + position + "')");
         } catch (Exception e) { e.printStackTrace(); }
         return PlayerRank.get(id);
     }
@@ -75,7 +72,14 @@ public class PlayerRank extends Database {
         } catch (Exception e) { e.printStackTrace(); }
     }
     public String teamName() {
-        return position() + "-" + displayName();
+        int pos = position();
+        String ps = "";
+        while (pos > 9) {
+            pos = pos-9;
+            ps += "9";
+        }
+        ps += pos;
+        return ps + "-" + displayName();
     }
     public int position() {
         if (!isRankExistent(id)) return 99999;
