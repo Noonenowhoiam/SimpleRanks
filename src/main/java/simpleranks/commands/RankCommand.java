@@ -43,9 +43,6 @@ public class RankCommand implements CommandExecutor {
                 }
             }
 
-            conf.setRank(rank);
-            ScoreboardSystem.reloadAll();
-
             if (DefaultConfiguration.rankTimerEnabled.get()) {
                 if (strings.length < 4) { sendHelp(commandSender); return true; }
                 String timer = strings[3];
@@ -56,7 +53,12 @@ public class RankCommand implements CommandExecutor {
                 if (ti == -1) { conf.setRankTimer(-1); } else { conf.setRankTimer(ti * 1440); }
                 if (ti == -1) { timer = "infinite"; }
                 commandSender.sendMessage(Prefix.SYSTEM.def() + "You gave the player §a" + updateP.getName() + "§7 the rank " + rank.color() + rank.displayName() + "§7 for §a" + timer + " days§7!");
+            } else {
+                conf.setRankTimer(-1);
             }
+
+            conf.setRank(rank);
+            ScoreboardSystem.reloadAll();
 
             if (!DefaultConfiguration.rankTimerEnabled.get()) {
                 commandSender.sendMessage(Prefix.SYSTEM.def() + "You gave the player §a" + updateP.getName() + "§7 the rank " + rank.color() + rank.displayName() + "§7!");

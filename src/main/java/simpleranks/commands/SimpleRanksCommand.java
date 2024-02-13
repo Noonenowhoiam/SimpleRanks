@@ -110,7 +110,7 @@ public class SimpleRanksCommand implements CommandExecutor {
                 boolean b = false;
                 if (config_value.equalsIgnoreCase("true")) b = true;
                 if (config_value.equalsIgnoreCase("false")) b = false;
-                DefaultConfiguration.teamRankEnabled.set(b);
+                DefaultConfiguration.rankTimerEnabled.set(b);
                 if (b) {
                     commandSender.sendMessage(Prefix.SYSTEM.def() + "You have successfully §aactivated§7 the rank timer!");
                 } else {

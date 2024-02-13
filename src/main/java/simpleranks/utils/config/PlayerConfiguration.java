@@ -64,7 +64,6 @@ public class PlayerConfiguration extends Database {
     }
 
     public void setRankTimer(int timer) {
-        if (!DefaultConfiguration.rankTimerEnabled.get()) return;
         try {
             if (hasPlayer()) {
                 database.executeUpdate("UPDATE " + playerDataTable + " SET timer = '" + timer + "' WHERE uuid = '" + playerUUID + "';");
