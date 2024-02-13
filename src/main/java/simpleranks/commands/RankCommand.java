@@ -37,6 +37,7 @@ public class RankCommand implements CommandExecutor {
                 if (commandSender instanceof Player p) {
                     PlayerRank setterrank = PlayerConfiguration.getFor(p).getRank();
                     if (setterrank.position() > rank.position()) { commandSender.sendMessage(Prefix.SYSTEM.err() + "You are not allowed to assign a §chigher rank§7!"); return true; }
+                    if (conf.getRank().position() < setterrank.position()) { commandSender.sendMessage(Prefix.SYSTEM.err() + "You are §cnot allowed§7 to update the rank of a higher player!"); return true; }
                 }
             }
             conf.setRank(rank);

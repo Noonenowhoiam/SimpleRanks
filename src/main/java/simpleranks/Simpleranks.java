@@ -25,6 +25,11 @@ public final class Simpleranks extends JavaPlugin {
         instance = this;
         data = this.getDataFolder().getPath();
 
+        if (!istPurpurServer() && !istPaperServer()) {
+            getLogger().severe("Plugin only supports Paper and Purpur!");
+            this.setEnabled(false);
+        }
+
         initListeners();
         initCommands();
         initFiles();
@@ -69,6 +74,14 @@ public final class Simpleranks extends JavaPlugin {
         if (!new File(data).exists()) {
             new File(data).mkdir();
         }
+    }
+
+    private boolean istPaperServer() {
+        return getServer().getVersion().toLowerCase().contains("paper");
+    }
+
+    private boolean istPurpurServer() {
+        return getServer().getVersion().toLowerCase().contains("purpur");
     }
 
 }

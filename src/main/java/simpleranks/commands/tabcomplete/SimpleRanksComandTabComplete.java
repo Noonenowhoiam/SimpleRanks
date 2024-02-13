@@ -17,6 +17,7 @@ public class SimpleRanksComandTabComplete implements TabCompleter {
         List<String> complete = new ArrayList<>();
 
         if (strings.length == 1) {
+            complete.add("info");
             if (commandSender.hasPermission(Permissions.SETUP_RANK_LIST.perm()) || commandSender.hasPermission(Permissions.SETUP_RANK_INFO.perm()) || commandSender.hasPermission(Permissions.SETUP_RANK_DELETE.perm()) ||
             commandSender.hasPermission(Permissions.SETUP_RANK_MODIFY.perm()) || commandSender.hasPermission(Permissions.SETUP_RANK_CREATE.name())) complete.add("rank");
             if (commandSender.hasPermission(Permissions.CONFIG.perm())) complete.add("config");

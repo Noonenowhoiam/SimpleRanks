@@ -1,11 +1,14 @@
 package simpleranks.commands;
 
+import io.papermc.paper.plugin.configuration.PluginMeta;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
+import simpleranks.Simpleranks;
 import simpleranks.system.ScoreboardSystem;
 import simpleranks.utils.JavaTools;
 import simpleranks.utils.Permissions;
@@ -21,8 +24,15 @@ import java.util.List;
 public class SimpleRanksCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        if (!(commandSender.hasPermission(Permissions.SETUP_RANK_INFO.perm()) && commandSender.hasPermission(Permissions.SETUP_RANK_DELETE.perm()) && commandSender.hasPermission(Permissions.SETUP_RANK_MODIFY.perm())
+        && commandSender.hasPermission(Permissions.SETUP_RANK_CREATE.perm()) && commandSender.hasPermission(Permissions.SETUP_RANK_LIST.perm()))) { sendInfo(commandSender); return true; }
         if (strings.length < 1) { sendHelp(commandSender); return true; }
         String option = strings[0];
+
+        if (option.equals("info")) {
+            sendInfo(commandSender);
+            return true;
+        }
 
         if (option.equals("config")) {
             if (!commandSender.hasPermission(Permissions.CONFIG.perm())) { commandSender.sendMessage(Prefix.SYSTEM.err() + "You are §cnot allowed§7 to execute this command!"); }
@@ -268,6 +278,17 @@ public class SimpleRanksCommand implements CommandExecutor {
         s.sendMessage(Prefix.SYSTEM.def() + "/sr modify <name> <key> <value> §8-§7 modify a ranks data");
         s.sendMessage(Prefix.SYSTEM.def() + "/sr list §8-§7 get a list of all ranks");
         s.sendMessage(Prefix.SYSTEM.def() + "/sr config <key> <value> §8-§7 edit config");
+        s.sendMessage("");
+    }
+
+    public void sendInfo(CommandSender s) {
+        PluginMeta meta = Simpleranks.instance.getPluginMeta();
+        s.sendMessage("");
+        s.sendMessage(Prefix.SYSTEM.def() +"§a§lPlugin Information:");
+        s.sendMessage(Prefix.SYSTEM.def() + "Version: " + meta.getVersion());
+        s.sendMessage(Prefix.SYSTEM.def() + "Authors: " + meta.getAuthors());
+        s.sendMessage(Prefix.SYSTEM.def() + "Name: " + meta.getDisplayName());
+        s.sendMessage(Prefix.SYSTEM.def() + "Website: " + meta.getWebsite());
         s.sendMessage("");
     }
 }
