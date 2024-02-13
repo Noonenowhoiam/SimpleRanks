@@ -156,7 +156,6 @@ public class PlayerRank extends Database {
         List<Long> re = new ArrayList<>();
         try {
             ResultSet rs = database.executeQuery("SELECT * FROM " + ranksDataTable + ";");
-            if (!rs.next()) return re;
             while (rs.next()) {
                 String tmp_id = rs.getString("id");
                 if (tmp_id == null) continue;

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import simpleranks.utils.Permissions;
 import simpleranks.utils.PlayerRank;
+import simpleranks.utils.config.DefaultConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,20 @@ public class RankCommandTabComplete implements TabCompleter {
         if (strings.length == 3 && strings[1].equals("set")) {
             if (commandSender.hasPermission(Permissions.SET_RANK.perm())) {
                 complete.addAll(PlayerRank.rankNames());
+            }
+        }
+
+        if (strings.length == 4 && strings[1].equals("set")) {
+            if (DefaultConfiguration.rankTimerEnabled.get()) {
+                complete.add("infinite");
+                complete.add("1");
+                complete.add("2");
+                complete.add("3");
+                complete.add("4");
+                complete.add("5");
+                complete.add("6");
+                complete.add("7");
+                complete.add("8");
             }
         }
 

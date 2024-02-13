@@ -42,7 +42,8 @@ public class Database {
 
             database.executeUpdate("CREATE TABLE IF NOT EXISTS \"simpleranks_playerdata\" (\n" +
                     "\t\"uuid\"\tTEXT NOT NULL,\n" +
-                    "\t\"rank\"\tTEXT\n" +
+                    "\t\"rank\"\tTEXT,\n" +
+                    "\t\"timer\"\tTEXT DEFAULT -1\n" +
                     ");");
         } catch (Exception e) { System.err.println("[DATENBANK] fehler beim erstellen der Tabellen!"); }
     }

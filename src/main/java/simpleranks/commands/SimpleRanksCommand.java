@@ -270,7 +270,7 @@ public class SimpleRanksCommand implements CommandExecutor {
 
     public void sendHelp(CommandSender s) {
         s.sendMessage("");
-        s.sendMessage("§a§lHelp:");
+        s.sendMessage(Prefix.SYSTEM.def() + "§a§lHelp:");
         s.sendMessage(Prefix.SYSTEM.def() + "/sr rank create <name> <color> §8-§7 create a new rank");
         s.sendMessage(Prefix.SYSTEM.def() + "/sr rank delete <name> §8-§7 delete a rank");
         s.sendMessage(Prefix.SYSTEM.def() + "/sr rank info <name> §8-§7 get the info of Rank");

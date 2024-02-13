@@ -3,6 +3,8 @@ package simpleranks;
 import org.bukkit.Bukkit;
 import simpleranks.system.ScoreboardSystem;
 import simpleranks.utils.PlayerRank;
+import simpleranks.utils.config.DefaultConfiguration;
+import simpleranks.utils.config.PlayerConfiguration;
 
 public final class Scheduler {
 
@@ -66,7 +68,18 @@ public final class Scheduler {
 
     private static void start1MinuteScheduler() {
         start1MinuteScheduler = Bukkit.getScheduler().scheduleSyncRepeatingTask(Simpleranks.instance, () -> {
-
+            if (DefaultConfiguration.rankTimerEnabled.get()) {
+                for (PlayerConfiguration conf : PlayerConfiguration.playersInDatabase()) {
+                    if (conf.getRankTimer() == -1) continue;
+                    int newTimer = conf.getRankTimer() - 1;
+                    if (newTimer < 1) {
+                        conf.setRank(PlayerRank.getDefaultRank());
+                        conf.setRankTimer(-1);
+                        continue;
+                    }
+                    conf.setRankTimer(newTimer);
+                }
+            }
             //
         }, 0, ONE_MINUTE);
     }

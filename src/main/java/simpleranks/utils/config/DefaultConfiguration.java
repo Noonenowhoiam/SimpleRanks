@@ -23,6 +23,8 @@ public class DefaultConfiguration {
     public static ConfigValue<String> teamRankSeparator = new ConfigValue<>("rank.teamSeparator", String.class, configFile.toPath());
     public static ConfigValue<Boolean> teamRankEnabled = new ConfigValue<>("rank.teamRank", Boolean.class, configFile.toPath());
 
+    public static ConfigValue<Boolean> rankTimerEnabled = new ConfigValue<>("rankTimer", Boolean.class, configFile.toPath());
+
 
     public static void init() {
         if (!configFile.exists()) {
@@ -32,6 +34,7 @@ public class DefaultConfiguration {
                 JsonManager defaultJson = new JsonManager();
 
                 defaultJson.addProperty("defaultRank", "Player");
+                defaultJson.addProperty("rankTimer", true);
                 defaultJson.addProperty("rank", new JsonManager()
                         .addProperty("chatFormat", "{rank_color}{rank_dpname} &8»&7 {player_name}&8:&7 {message}")
                         .addProperty("chatRank", true)

@@ -7,6 +7,8 @@ import simpleranks.utils.PlayerRank;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class PlayerConfiguration extends Database {
@@ -61,4 +63,39 @@ public class PlayerConfiguration extends Database {
         return PlayerRank.getDefaultRank();
     }
 
+    public void setRankTimer(int timer) {
+        if (!DefaultConfiguration.rankTimerEnabled.get()) return;
+        try {
+            if (hasPlayer()) {
+                database.executeUpdate("UPDATE " + playerDataTable + " SET timer = '" + timer + "' WHERE uuid = '" + playerUUID + "';");
+            } else {
+                database.executeUpdate("INSERT INTO " + playerDataTable + " (`uuid`, `rank`, `timer`) VALUES ('" + playerUUID + "', '" + PlayerRank.getDefaultRank().id() + "', '" + timer + "')");
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    public int getRankTimer() {
+        if (!hasPlayer()) return -1;
+        if (!DefaultConfiguration.rankTimerEnabled.get()) return -1;
+        try {
+            ResultSet rs = database.executeQuery("SELECT * FROM " + playerDataTable + " WHERE uuid = '" + playerUUID + "';");
+            int timer = -1; if (rs.next()) { timer = rs.getInt("timer"); }
+            rs.close();
+            return timer;
+        } catch (Exception e) { e.printStackTrace(); }
+        return -1;
+    }
+
+
+    public static List<PlayerConfiguration> playersInDatabase() {
+        List<PlayerConfiguration> re = new ArrayList<>();
+        try {
+            ResultSet rs = database.executeQuery("SELECT * FROM " + playerDataTable + ";");
+            while (rs.next()) {
+                re.add(PlayerConfiguration.getFor(UUID.fromString(rs.getString("uuid"))));
+            }
+            rs.close();
+        } catch (Exception e) { e.printStackTrace(); }
+        return re;
+    }
 }
