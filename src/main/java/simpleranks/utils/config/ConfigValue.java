@@ -16,11 +16,19 @@ public class ConfigValue<T> {
     private final Path path;
     private final String key;
     private final Class<T> type;
+    private T defaultValue = null;
 
     public ConfigValue(String key, Class<T> type, Path filePath) {
         this.key = key;
         this.type = type;
         this.path = filePath;
+    }
+
+    public ConfigValue(String key, Class<T> type, Path filePath, T defaultValue) {
+        this.key = key;
+        this.type = type;
+        this.path = filePath;
+        this.defaultValue = defaultValue;
     }
 
     public void set(T value) {
@@ -86,6 +94,10 @@ public class ConfigValue<T> {
             now++;
         }
 
+        if (!jsonManager.hasKey(tmpkey)) {
+            if (defaultValue != null) set(defaultValue);
+            return defaultValue;
+        }
         if (type == Arrays.class) {
             return (T) jsonManager.getArray(tmpkey);
         } else if (type == String.class) {

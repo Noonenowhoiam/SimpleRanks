@@ -39,6 +39,7 @@ public final class Scheduler {
 
     private static void start1TickScheduler() {
         start1TickScheduler = Bukkit.getScheduler().scheduleSyncRepeatingTask(Simpleranks.instance, () -> {
+            DefaultConfiguration.init();
             //
         }, 0, ONE_TICK);
     }
