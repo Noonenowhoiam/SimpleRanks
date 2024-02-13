@@ -105,6 +105,21 @@ public class SimpleRanksCommand implements CommandExecutor {
                 return true;
             }
 
+            if (config_key.equals("rankTimer")) {
+                if (!(config_value.equalsIgnoreCase("true") || config_value.equalsIgnoreCase("false"))) { commandSender.sendMessage(Prefix.SYSTEM.err() + "Please enter §atrue§7 or §cfalse§7 as value!"); return true; }
+                boolean b = false;
+                if (config_value.equalsIgnoreCase("true")) b = true;
+                if (config_value.equalsIgnoreCase("false")) b = false;
+                DefaultConfiguration.teamRankEnabled.set(b);
+                if (b) {
+                    commandSender.sendMessage(Prefix.SYSTEM.def() + "You have successfully §aactivated§7 the rank timer!");
+                } else {
+                    commandSender.sendMessage(Prefix.SYSTEM.def() + "You have successfully §cdeactivated§7 the rank timer!");
+                }
+                ScoreboardSystem.reloadAll();
+                return true;
+            }
+
             commandSender.sendMessage(Prefix.SYSTEM.err() + "The config value you specified was §cnot found§7!");
             return true;
         }

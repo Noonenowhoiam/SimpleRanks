@@ -28,6 +28,7 @@ public class SimpleRanksComandTabComplete implements TabCompleter {
             complete.add("chatFormat");
             complete.add("chatRank");
             complete.add("teamSeperator");
+            complete.add("rankTimer");
             complete.add("teamRank");
         }
 
