@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import simpleranks.utils.Permissions;
 import simpleranks.utils.PlayerRank;
+import simpleranks.utils.config.DefaultConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +28,22 @@ public class SimpleRanksComandTabComplete implements TabCompleter {
             complete.add("defaultRank");
             complete.add("chatFormat");
             complete.add("chatRank");
-            complete.add("teamSeperator");
+            complete.add("teamSeparator");
             complete.add("rankTimer");
             complete.add("teamRank");
+        }
+
+        if (strings.length == 3 && strings[0].equals("config") && (strings[1].equals("chatRank") || strings[1].equals("rankTimer") || strings[1].equals("teamRank"))) {
+            complete.add("true");
+            complete.add("false");
+        }
+
+        if (strings.length == 3 && strings[0].equals("config") && strings[1].equals("chatFormat")) {
+            complete.add(DefaultConfiguration.chatRankFormat.defaultValue());
+        }
+
+        if (strings.length == 3 && strings[0].equals("config") && strings[1].equals("teamSeparator")) {
+            complete.add(DefaultConfiguration.teamRankSeparator.defaultValue());
         }
 
         if (strings.length == 3 && strings[1].equals("defaultRank") && commandSender.hasPermission(Permissions.CONFIG.perm())) {

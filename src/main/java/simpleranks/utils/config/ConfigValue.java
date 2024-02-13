@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import simpleranks.utils.JsonManager;
 
-import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +30,9 @@ public class ConfigValue<T> {
         this.defaultValue = defaultValue;
     }
 
+    public T defaultValue() {
+        return defaultValue;
+    }
     public void set(T value) {
         JsonManager jsonManager = new JsonManager();
         String json;

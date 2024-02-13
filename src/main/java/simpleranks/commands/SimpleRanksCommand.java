@@ -76,11 +76,11 @@ public class SimpleRanksCommand implements CommandExecutor {
                 return true;
             }
 
-            if (config_key.equals("teamSeperator")) {
+            if (config_key.equals("teamSeparator")) {
                 String value_without_colorcodes = config_value;
                 for (String c : PlayerRank.colors()) { value_without_colorcodes = value_without_colorcodes.replace("&" + c, ""); }
 
-                if (value_without_colorcodes.length() > 4) { commandSender.sendMessage(Prefix.SYSTEM.err() + "The seperator may be a §cmaximum of 4 symbols§7 long!"); return true; }
+                if (value_without_colorcodes.length() > 4) { commandSender.sendMessage(Prefix.SYSTEM.err() + "The separator may be a §cmaximum of 4 symbols§7 long!"); return true; }
 
                 config_value = config_value.replace("&", "§");
 
@@ -249,7 +249,7 @@ public class SimpleRanksCommand implements CommandExecutor {
                     if (!"4c6e2ab319d5f780".contains(option3_value)) { commandSender.sendMessage(Prefix.SYSTEM.err() + "The specified color does §cnot exist§7!"); return true; }
                     String oldC = PlayerRank.get(rankName).color();
                     PlayerRank.get(rankName).setColor(option3_value);
-                    commandSender.sendMessage(Prefix.SYSTEM.def() + "You changed the rank color from " + oldC + "color§7 to " + option3_value + "color§7!");
+                    commandSender.sendMessage(Prefix.SYSTEM.def() + "You changed the rank color from " + oldC + "color§7 to §" + option3_value + "color§7!");
                     ScoreboardSystem.reloadAll();
                     return true;
                 }
