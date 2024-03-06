@@ -137,6 +137,24 @@ public class PlayerRank extends Database {
         return this;
     }
 
+    public PlayerRank setGroup(PlayerRankPermissionGroup group) {
+        try {
+            database.executeUpdate("UPDATE " + ranksDataTable + " SET group = '" + group.name() + "' WHERE id = '" + id + "';");
+        } catch (Exception e) { e.printStackTrace(); }
+        return this;
+    }
+    public PlayerRankPermissionGroup group() {
+        if (!isRankExistent(id)) return null;
+        try {
+            ResultSet rs = database.executeQuery("SELECT * FROM " + ranksDataTable + " WHERE id = '" + id + "';");
+            String s = null; if (rs.next()) { s = rs.getString("group"); }
+            rs.close();
+            if (!PlayerRankPermissionGroup.groupNames().contains(s)) return PlayerRankPermissionGroup.getDefaultGroup();
+            return PlayerRankPermissionGroup.get(s);
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
+
 
     public static List<PlayerRank> ranks() {
         List<PlayerRank> re = new ArrayList<>();

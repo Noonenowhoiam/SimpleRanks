@@ -75,7 +75,7 @@ public class RankCommand implements CommandExecutor {
             } else {
                 String timer = String.valueOf(conf.getRankTimer());
                 if (timer.equals("-1")) { timer = "infinite"; }
-                commandSender.sendMessage(Prefix.SYSTEM.def() + "The player §a" + updateP.getName() + "§7 has the rank " + conf.getRank().color() + conf.getRank().displayName() + "§7 for §a" + timer + " days§7!");
+                commandSender.sendMessage(Prefix.SYSTEM.def() + "The player §a" + updateP.getName() + "§7 has the rank " + conf.getRank().color() + conf.getRank().displayName() + "§7 for §a" + JavaTools.convertMinutesToDaysHoursMinutes(Integer.valueOf(timer)) + " §7!");
             }
             return true;
         }

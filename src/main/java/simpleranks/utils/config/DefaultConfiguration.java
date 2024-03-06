@@ -22,8 +22,11 @@ public class DefaultConfiguration {
 
     public static ConfigValue<String> teamRankSeparator = new ConfigValue<>("rank.teamSeparator", String.class, configFile.toPath(), "»");
     public static ConfigValue<Boolean> teamRankEnabled = new ConfigValue<>("rank.teamRank", Boolean.class, configFile.toPath(), true);
+    public static ConfigValue<String> teamRankPlayerNameColor = new ConfigValue<>("rank.teamRankPlayerNameColor", String.class, configFile.toPath(), "7");
 
     public static ConfigValue<Boolean> rankTimerEnabled = new ConfigValue<>("rankTimer", Boolean.class, configFile.toPath(), true);
+
+    public static ConfigValue<String> defaultPermissionGroup = new ConfigValue<>("defaultGroup", String.class, configFile.toPath(), "Default");
 
 
     public static void init() {
@@ -34,12 +37,14 @@ public class DefaultConfiguration {
                 JsonManager defaultJson = new JsonManager();
 
                 defaultJson.addProperty("defaultRank", "Player");
+                defaultJson.addProperty("defaultGroup", "Default");
                 defaultJson.addProperty("rankTimer", true);
                 defaultJson.addProperty("rank", new JsonManager()
                         .addProperty("chatFormat", "{rank_color}{rank_dpname} &8»&7 {player_name}&8:&7 {message}")
                         .addProperty("chatRank", true)
                         .addProperty("teamSeparator", "»")
                         .addProperty("teamRank", true)
+                        .addProperty("teamRankPlayerNameColor", "7")
                 );
 
                 try {

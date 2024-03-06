@@ -11,7 +11,9 @@ import simpleranks.listeners.PlayerJoinListener;
 import simpleranks.listeners.PlayerLeaveListener;
 import simpleranks.system.ScoreboardSystem;
 import simpleranks.utils.Database;
+import simpleranks.utils.PermissionsManager;
 import simpleranks.utils.PlayerRank;
+import simpleranks.utils.PlayerRankPermissionGroup;
 import simpleranks.utils.config.DefaultConfiguration;
 
 import java.io.File;
@@ -37,6 +39,8 @@ public final class Simpleranks extends JavaPlugin {
         //Language.init();
         Database.init();
         PlayerRank.init();
+        PlayerRankPermissionGroup.init();
+        PermissionsManager.reload();
         ScoreboardSystem.reloadAll();
 
         getLogger().info("Loaded all ranks: " + PlayerRank.rankNames());

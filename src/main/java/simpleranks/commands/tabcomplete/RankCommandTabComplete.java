@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import simpleranks.utils.Permissions;
@@ -20,39 +21,43 @@ public class RankCommandTabComplete implements TabCompleter {
 
         if (strings.length == 1) {
             if (commandSender.hasPermission(Permissions.GET_RANK.perm()) || commandSender.hasPermission(Permissions.SET_RANK.perm())) {
-                List<String> playerNames =  new ArrayList<>();
-                Bukkit.getOnlinePlayers().forEach(player -> { playerNames.add(player.getName()); });
-                complete.addAll(playerNames);
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (!player.getName().startsWith(strings[0])) continue;
+                    complete.add(player.getName());
+                }
             }
         }
 
         if (strings.length == 2) {
             if (commandSender.hasPermission(Permissions.GET_RANK.perm())) {
-                complete.add("get");
+                if ("get".startsWith(strings[1])) complete.add("get");
             }
 
             if (commandSender.hasPermission(Permissions.SET_RANK.perm())) {
-                complete.add("set");
+                if ("set".startsWith(strings[1])) complete.add("set");
             }
         }
 
         if (strings.length == 3 && strings[1].equals("set")) {
             if (commandSender.hasPermission(Permissions.SET_RANK.perm())) {
-                complete.addAll(PlayerRank.rankNames());
+                for (String rankName : PlayerRank.rankNames()) {
+                    if (!rankName.startsWith(strings[2])) continue;
+                    complete.add(rankName);
+                }
             }
         }
 
         if (strings.length == 4 && strings[1].equals("set")) {
             if (DefaultConfiguration.rankTimerEnabled.get()) {
-                complete.add("infinite");
-                complete.add("1");
-                complete.add("2");
-                complete.add("3");
-                complete.add("4");
-                complete.add("5");
-                complete.add("6");
-                complete.add("7");
-                complete.add("8");
+                if ("infinite".startsWith(strings[3])) complete.add("infinite");
+                if ("1".startsWith(strings[3])) complete.add("1");
+                if ("2".startsWith(strings[3])) complete.add("2");
+                if ("3".startsWith(strings[3])) complete.add("3");
+                if ("4".startsWith(strings[3])) complete.add("4");
+                if ("5".startsWith(strings[3])) complete.add("5");
+                if ("6".startsWith(strings[3])) complete.add("6");
+                if ("7".startsWith(strings[3])) complete.add("7");
+                if ("8".startsWith(strings[3])) complete.add("8");
             }
         }
 

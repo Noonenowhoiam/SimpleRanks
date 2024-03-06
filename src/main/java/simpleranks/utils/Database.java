@@ -19,6 +19,7 @@ public class Database {
 
     public static String playerDataTable = "simpleranks_playerdata";
     public static String ranksDataTable = "simpleranks_ranks";
+    public static String ranksPermissionGroupTable = "simpleranks_permission_groups";
 
     public static void init() {
         initFiles();
@@ -40,12 +41,22 @@ public class Database {
                     "\t\"position\"\tINTEGER NOT NULL\n" +
                     ");");
 
+            if (!databaseConnection.getMetaData().getColumns(null, null, "simpleranks_ranks", "group").next()) {
+                database.execute("ALTER TABLE \"simpleranks_ranks\" ADD \t\"group\"\t VARCHAR(2000);");
+            }
+
+            database.executeUpdate("CREATE TABLE IF NOT EXISTS \"simpleranks_permission_groups\" (\n" +
+                    "\t\"id\"\tTEXT NOT NULL,\n" +
+                    "\t\"name\"\tTEXT NOT NULL,\n" +
+                    "\t\"permissions\"\tTEXT NOT NULL\n" +
+                    ");");
+
             database.executeUpdate("CREATE TABLE IF NOT EXISTS \"simpleranks_playerdata\" (\n" +
                     "\t\"uuid\"\tTEXT NOT NULL,\n" +
                     "\t\"rank\"\tTEXT,\n" +
                     "\t\"timer\"\tTEXT DEFAULT -1\n" +
                     ");");
-        } catch (Exception e) { System.err.println("[DATENBANK] fehler beim erstellen der Tabellen!"); }
+        } catch (Exception e) { System.err.println("[DATENBANK] fehler beim erstellen der Tabellen!"); e.printStackTrace(); }
     }
 
     private static void initFiles() {

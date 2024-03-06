@@ -2,6 +2,7 @@ package simpleranks;
 
 import org.bukkit.Bukkit;
 import simpleranks.system.ScoreboardSystem;
+import simpleranks.utils.PermissionsManager;
 import simpleranks.utils.PlayerRank;
 import simpleranks.utils.config.DefaultConfiguration;
 import simpleranks.utils.config.PlayerConfiguration;
@@ -69,6 +70,7 @@ public final class Scheduler {
 
     private static void start1MinuteScheduler() {
         start1MinuteScheduler = Bukkit.getScheduler().scheduleSyncRepeatingTask(Simpleranks.instance, () -> {
+            PermissionsManager.reload();
             if (DefaultConfiguration.rankTimerEnabled.get()) {
                 for (PlayerConfiguration conf : PlayerConfiguration.playersInDatabase()) {
                     if (conf.getRankTimer() == -1) continue;

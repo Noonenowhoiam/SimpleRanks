@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import simpleranks.utils.Permissions;
 import simpleranks.utils.PlayerRank;
+import simpleranks.utils.PlayerRankPermissionGroup;
 import simpleranks.utils.config.DefaultConfiguration;
 
 import java.util.ArrayList;
@@ -18,24 +19,26 @@ public class SimpleRanksComandTabComplete implements TabCompleter {
         List<String> complete = new ArrayList<>();
 
         if (strings.length == 1) {
-            complete.add("info");
+            if ("info".startsWith(strings[0])) complete.add("info");
             if (commandSender.hasPermission(Permissions.SETUP_RANK_LIST.perm()) || commandSender.hasPermission(Permissions.SETUP_RANK_INFO.perm()) || commandSender.hasPermission(Permissions.SETUP_RANK_DELETE.perm()) ||
-            commandSender.hasPermission(Permissions.SETUP_RANK_MODIFY.perm()) || commandSender.hasPermission(Permissions.SETUP_RANK_CREATE.name())) complete.add("rank");
-            if (commandSender.hasPermission(Permissions.CONFIG.perm())) complete.add("config");
+            commandSender.hasPermission(Permissions.SETUP_RANK_MODIFY.perm()) || commandSender.hasPermission(Permissions.SETUP_RANK_CREATE.name()) && "rank".startsWith(strings[0])) complete.add("rank");
+            if (commandSender.hasPermission(Permissions.SETUP_GROUP_LIST.perm()) || commandSender.hasPermission(Permissions.SETUP_GROUP_INFO.perm()) || commandSender.hasPermission(Permissions.SETUP_GROUP_DELETE.perm()) ||
+                    commandSender.hasPermission(Permissions.SETUP_GROUP_MODIFY.perm()) || commandSender.hasPermission(Permissions.SETUP_GROUP_CREATE.name()) && "group".startsWith(strings[0])) complete.add("group");
+            if (commandSender.hasPermission(Permissions.CONFIG.perm()) && "config".startsWith(strings[0])) complete.add("config");
         }
 
         if (strings.length == 2 && strings[0].equals("config") && commandSender.hasPermission(Permissions.CONFIG.perm())) {
-            complete.add("defaultRank");
-            complete.add("chatFormat");
-            complete.add("chatRank");
-            complete.add("teamSeparator");
-            complete.add("rankTimer");
-            complete.add("teamRank");
+            if ("defaultRank".startsWith(strings[1])) complete.add("defaultRank");
+            if ("chatFormat".startsWith(strings[1])) complete.add("chatFormat");
+            if ("chatRank".startsWith(strings[1])) complete.add("chatRank");
+            if ("teamSeparator".startsWith(strings[1])) complete.add("teamSeparator");
+            if ("rankTimer".startsWith(strings[1])) complete.add("rankTimer");
+            if ("teamRank".startsWith(strings[1])) complete.add("teamRank");
         }
 
         if (strings.length == 3 && strings[0].equals("config") && (strings[1].equals("chatRank") || strings[1].equals("rankTimer") || strings[1].equals("teamRank"))) {
-            complete.add("true");
-            complete.add("false");
+            if ("true".startsWith(strings[2])) complete.add("true");
+            if ("false".startsWith(strings[2])) complete.add("false");
         }
 
         if (strings.length == 3 && strings[0].equals("config") && strings[1].equals("chatFormat")) {
@@ -47,26 +50,59 @@ public class SimpleRanksComandTabComplete implements TabCompleter {
         }
 
         if (strings.length == 3 && strings[1].equals("defaultRank") && commandSender.hasPermission(Permissions.CONFIG.perm())) {
-            complete.addAll(PlayerRank.rankNames());
+            for (String rankName : PlayerRank.rankNames()) {
+                if (!rankName.startsWith(strings[2])) continue;
+                complete.add(rankName);
+            }
         }
 
         if (strings.length == 2 && strings[0].equals("rank")) {
-            if (commandSender.hasPermission(Permissions.SETUP_RANK_CREATE.perm())) complete.add("create");
-            if (commandSender.hasPermission(Permissions.SETUP_RANK_DELETE.perm())) complete.add("delete");
-            if (commandSender.hasPermission(Permissions.SETUP_RANK_INFO.perm())) complete.add("info");
-            if (commandSender.hasPermission(Permissions.SETUP_RANK_MODIFY.perm())) complete.add("modify");
-            if (commandSender.hasPermission(Permissions.SETUP_RANK_LIST.perm())) complete.add("list");
+            if (commandSender.hasPermission(Permissions.SETUP_RANK_CREATE.perm()) && "create".startsWith(strings[1])) complete.add("create");
+            if (commandSender.hasPermission(Permissions.SETUP_RANK_DELETE.perm()) && "delete".startsWith(strings[1])) complete.add("delete");
+            if (commandSender.hasPermission(Permissions.SETUP_RANK_INFO.perm()) && "info".startsWith(strings[1])) complete.add("info");
+            if (commandSender.hasPermission(Permissions.SETUP_RANK_MODIFY.perm()) && "modify".startsWith(strings[1])) complete.add("modify");
+            if (commandSender.hasPermission(Permissions.SETUP_RANK_LIST.perm()) && "list".startsWith(strings[1])) complete.add("list");
+        }
+
+        if (strings.length == 2 && strings[0].equals("group")) {
+            if (commandSender.hasPermission(Permissions.SETUP_GROUP_CREATE.perm()) && "create".startsWith(strings[1])) complete.add("create");
+            if (commandSender.hasPermission(Permissions.SETUP_GROUP_DELETE.perm()) && "delete".startsWith(strings[1])) complete.add("delete");
+            if (commandSender.hasPermission(Permissions.SETUP_GROUP_INFO.perm()) && "info".startsWith(strings[1])) complete.add("info");
+            if (commandSender.hasPermission(Permissions.SETUP_GROUP_MODIFY.perm()) && "modify".startsWith(strings[1])) complete.add("modify");
+            if (commandSender.hasPermission(Permissions.SETUP_GROUP_LIST.perm()) && "list".startsWith(strings[1])) complete.add("list");
         }
 
         if (strings.length == 3 && strings[1].equals("modify") && commandSender.hasPermission(Permissions.SETUP_RANK_MODIFY.perm())) {
-            complete.addAll(PlayerRank.rankNames());
+            if (strings[0].equals("group")) {
+                for (String name : PlayerRankPermissionGroup.groupNames()) {
+                    if (!name.startsWith(strings[2])) continue;
+                    complete.add(name);
+                }
+            }
+
+            if (strings[0].equals("rank")) {
+                for (String rankName : PlayerRank.rankNames()) {
+                    if (!rankName.startsWith(strings[2])) continue;
+                    complete.add(rankName);
+                }
+            }
         }
 
         if (strings.length == 4 && strings[1].equals("modify") && commandSender.hasPermission(Permissions.SETUP_RANK_MODIFY.perm())) {
-            complete.add("setDisplayName");
-            complete.add("setColor");
-            complete.add("moveUp");
-            complete.add("moveDown");
+            if (strings[0].equals("group")) {
+                if ("addPermission".startsWith(strings[3])) complete.add("addPermission");
+                if ("removePermission".startsWith(strings[3])) complete.add("removePermission");
+                if ("resetPermissions".startsWith(strings[3])) complete.add("resetPermissions");
+                if ("setName".startsWith(strings[3])) complete.add("setName");
+            }
+
+            if (strings[0].equals("rank")) {
+                if ("setDisplayName".startsWith(strings[3])) complete.add("setDisplayName");
+                if ("setColor".startsWith(strings[3])) complete.add("setColor");
+                if ("moveUp".startsWith(strings[3])) complete.add("moveUp");
+                if ("moveDown".startsWith(strings[3])) complete.add("moveDown");
+                if ("setGroup".startsWith(strings[3])) complete.add("setGroup");
+            }
         }
 
         if (strings.length == 5 && strings[1].equals("modify") && strings[3].equals("setColor") && commandSender.hasPermission(Permissions.SETUP_RANK_MODIFY.perm())) {
@@ -74,15 +110,41 @@ public class SimpleRanksComandTabComplete implements TabCompleter {
         }
 
         if (strings.length == 3 && strings[1].equals("delete") && commandSender.hasPermission(Permissions.SETUP_RANK_DELETE.perm())) {
-            complete.addAll(PlayerRank.rankNames());
+            if (strings[0].equals("group")) {
+                for (String name : PlayerRankPermissionGroup.groupNames()) {
+                    if (!name.startsWith(strings[2])) continue;
+                    complete.add(name);
+                }
+            }
+
+            if (strings[0].equals("rank")) {
+                for (String rankName : PlayerRank.rankNames()) {
+                    if (!rankName.startsWith(strings[2])) continue;
+                    complete.add(rankName);
+                }
+            }
         }
 
         if (strings.length == 3 && strings[1].equals("info") && commandSender.hasPermission(Permissions.SETUP_RANK_INFO.perm())) {
-            complete.addAll(PlayerRank.rankNames());
+            if (strings[0].equals("group")) {
+                for (String name : PlayerRankPermissionGroup.groupNames()) {
+                    if (!name.startsWith(strings[2])) continue;
+                    complete.add(name);
+                }
+            }
+
+            if (strings[0].equals("rank")) {
+                for (String rankName : PlayerRank.rankNames()) {
+                    if (!rankName.startsWith(strings[2])) continue;
+                    complete.add(rankName);
+                }
+            }
         }
 
         if (strings.length == 4 && strings[1].equals("create") && commandSender.hasPermission(Permissions.SETUP_RANK_CREATE.perm())) {
-            complete.addAll(PlayerRank.colors());
+            if (strings[0].equals("rank")) {
+                complete.addAll(PlayerRank.colors());
+            }
         }
 
         return complete;

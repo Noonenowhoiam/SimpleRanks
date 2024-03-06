@@ -24,7 +24,6 @@ public class ScoreboardSystem {
 
     public static Map<UUID, ScoreboardSystem> loggedScoreboards = new HashMap<>();
 
-    private Scoreboard scoreboard;
     private final UUID uuid;
     public ScoreboardSystem(Player owner) {
         this.uuid = owner.getUniqueId();
@@ -37,16 +36,18 @@ public class ScoreboardSystem {
     public void loadMain() {
         PlayerConfiguration conf = PlayerConfiguration.getFor(uuid);
 
-        scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-        scoreboard.getTeams().forEach(team -> { team.unregister(); });
+        scoreboard.getTeams().forEach(Team::unregister);
 
         if (!DefaultConfiguration.teamRankEnabled.get()) return;
 
         for (PlayerRank this_rank : PlayerRank.ranks()) {
             Team t = scoreboard.registerNewTeam(this_rank.teamName());
             t.prefix(Component.text(this_rank.color() + this_rank.displayName() + "§8 " + DefaultConfiguration.teamRankSeparator.get() + " §7"));
-            t.setColor(ChatColor.getByChar('7'));
+
+            if (!PlayerRank.colors().contains(DefaultConfiguration.teamRankPlayerNameColor.get())) t.setColor(ChatColor.getByChar('7'));
+            else t.setColor(ChatColor.getByChar(DefaultConfiguration.teamRankPlayerNameColor.get()));
         }
 
         scoreboard.getTeam(conf.getRank().teamName()).addPlayer(Bukkit.getOfflinePlayer(uuid));
@@ -57,7 +58,9 @@ public class ScoreboardSystem {
             scoreboard.getTeam(this_rank.teamName()).addPlayer(this_player);
         }
 
-        Bukkit.getPlayer(uuid).setScoreboard(scoreboard);
+        Player p = Bukkit.getPlayer(uuid);
+        if (p == null) return;
+        p.setScoreboard(scoreboard);
     }
 
     public void reload() {
