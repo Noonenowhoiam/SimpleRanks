@@ -11,7 +11,7 @@ public class PlayerLeaveListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         ScoreboardSystem.playerLeaveEvent(e);
-        PermissionsManager.removeAllPermissionsFromPlayer(e.getPlayer());
+        PermissionsManager.removePlayerAttachment(e.getPlayer());
     }
 
 }

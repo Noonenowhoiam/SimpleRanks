@@ -1,7 +1,6 @@
 package simpleranks.utils;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import simpleranks.Simpleranks;
@@ -57,7 +56,8 @@ public class PermissionsManager {
     }
 
     public static void addPermissionGroupPermissionsToPlayer(Player p) {
-        PlayerRankPermissionGroup group = PlayerConfiguration.getFor(p).getRank().group();
+        PermissionGroup group = PlayerConfiguration.getFor(p).getRank().group();
+        removeAllPermissionsFromPlayer(p);
         for (String perm : group.permissions()) {
             addPermissionToPlayer(p, perm);
         }

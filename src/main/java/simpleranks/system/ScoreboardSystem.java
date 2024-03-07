@@ -34,10 +34,12 @@ public class ScoreboardSystem {
     }
 
     public void loadMain() {
-        PlayerConfiguration conf = PlayerConfiguration.getFor(uuid);
+        Player p = Bukkit.getPlayer(uuid);
+        if (p == null) return;
 
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        Scoreboard scoreboard = p.getScoreboard();
 
+        scoreboard.getTeams().forEach(team -> { team.getPlayers().forEach(team::removePlayer); });
         scoreboard.getTeams().forEach(Team::unregister);
 
         if (!DefaultConfiguration.teamRankEnabled.get()) return;
@@ -50,16 +52,11 @@ public class ScoreboardSystem {
             else t.setColor(ChatColor.getByChar(DefaultConfiguration.teamRankPlayerNameColor.get()));
         }
 
-        scoreboard.getTeam(conf.getRank().teamName()).addPlayer(Bukkit.getOfflinePlayer(uuid));
-
         for (Player this_player : Bukkit.getOnlinePlayers()) {
-            if (this_player.getUniqueId() == uuid) continue;
             PlayerRank this_rank = PlayerConfiguration.getFor(this_player).getRank();
             scoreboard.getTeam(this_rank.teamName()).addPlayer(this_player);
         }
 
-        Player p = Bukkit.getPlayer(uuid);
-        if (p == null) return;
         p.setScoreboard(scoreboard);
     }
 

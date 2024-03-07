@@ -8,10 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import simpleranks.system.ScoreboardSystem;
-import simpleranks.utils.JavaTools;
-import simpleranks.utils.Permissions;
-import simpleranks.utils.PlayerRank;
-import simpleranks.utils.Prefix;
+import simpleranks.utils.*;
 import simpleranks.utils.config.DefaultConfiguration;
 import simpleranks.utils.config.PlayerConfiguration;
 
@@ -59,6 +56,7 @@ public class RankCommand implements CommandExecutor {
 
             conf.setRank(rank);
             ScoreboardSystem.reloadAll();
+            PermissionsManager.reload();
 
             if (!DefaultConfiguration.rankTimerEnabled.get()) {
                 commandSender.sendMessage(Prefix.SYSTEM.def() + "You gave the player §a" + updateP.getName() + "§7 the rank " + rank.color() + rank.displayName() + "§7!");

@@ -1,9 +1,6 @@
 package simpleranks.utils;
 
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.entity.Player;
 import simpleranks.utils.config.DefaultConfiguration;
-import simpleranks.utils.config.PlayerConfiguration;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -24,9 +21,9 @@ public class PlayerRank extends Database {
         List<Long> ranks = PlayerRank.rankIds();
         while (ranks.contains(id)) { id = new Random().nextLong(); id = Math.abs(id) % 10000000000000000L; }
 
-        int position = PlayerRank.ranks().size();
+        int position = - 1;
         if (dpn.equals(DefaultConfiguration.defaultRank.get())) {
-            position = 1000;
+            position = rankNames().size() + 2;
         } else {
             if (!PlayerRank.rankNames().isEmpty()) {
                 if (PlayerRank.rankNames().contains(getDefaultRank().displayName())) { position = position-1; }
@@ -67,8 +64,8 @@ public class PlayerRank extends Database {
             ResultSet rs = database.executeQuery("SELECT * FROM " + ranksDataTable + " WHERE position = '" + position + "';");
             String temp_id = null; if (rs.next()) { temp_id = rs.getString("id"); }
             rs.close();
-            if (temp_id == null) return PlayerRank.getDefaultRank();
-            if (!JavaTools.isLong(temp_id)) return PlayerRank.getDefaultRank();
+            if (temp_id == null) return null;
+            if (!JavaTools.isLong(temp_id)) return null;
             return PlayerRank.get(Long.valueOf(temp_id));
         } catch (Exception e) { e.printStackTrace(); }
         return PlayerRank.getDefaultRank();
@@ -101,7 +98,7 @@ public class PlayerRank extends Database {
             ps += "9";
         }
         ps += pos;
-        return ps + "-" + displayName();
+        return ps + "-" + displayName().toLowerCase();
     }
     public int position() {
         if (!isRankExistent(id)) return 99999;
@@ -137,20 +134,21 @@ public class PlayerRank extends Database {
         return this;
     }
 
-    public PlayerRank setGroup(PlayerRankPermissionGroup group) {
+    public PlayerRank setGroup(PermissionGroup group) {
         try {
-            database.executeUpdate("UPDATE " + ranksDataTable + " SET group = '" + group.name() + "' WHERE id = '" + id + "';");
+            database.executeUpdate("UPDATE " + ranksDataTable + " SET `group` = '" + group.id() + "' WHERE id = '" + id + "';");
         } catch (Exception e) { e.printStackTrace(); }
         return this;
     }
-    public PlayerRankPermissionGroup group() {
+    public PermissionGroup group() {
         if (!isRankExistent(id)) return null;
         try {
             ResultSet rs = database.executeQuery("SELECT * FROM " + ranksDataTable + " WHERE id = '" + id + "';");
             String s = null; if (rs.next()) { s = rs.getString("group"); }
             rs.close();
-            if (!PlayerRankPermissionGroup.groupNames().contains(s)) return PlayerRankPermissionGroup.getDefaultGroup();
-            return PlayerRankPermissionGroup.get(s);
+            if (s == null) { return PermissionGroup.getDefaultGroup(); }
+            if (!PermissionGroup.groupIds().contains(Long.valueOf(s))) { setGroup(PermissionGroup.getDefaultGroup()); return PermissionGroup.getDefaultGroup(); }
+            return PermissionGroup.get(Long.valueOf(s));
         } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
@@ -204,9 +202,12 @@ public class PlayerRank extends Database {
 
     public static PlayerRank getDefaultRank() {
         if (!isRankExistent(DefaultConfiguration.defaultRank.get())) {
-            return newRank(DefaultConfiguration.defaultRank.get(), "f").setPosition(10000);
+            PlayerRank rank = newRank(DefaultConfiguration.defaultRank.get(), "f").setPosition(rankNames().size() + 2);
+            resortRanks();
+            return rank;
         } else {
-            return PlayerRank.get(DefaultConfiguration.defaultRank.get()).setPosition(10000);
+            if (PlayerRank.get(DefaultConfiguration.defaultRank.get()).position() == 10000) { PlayerRank.get(DefaultConfiguration.defaultRank.get()).setPosition(rankNames().size() + 2); resortRanks(); }
+            return PlayerRank.get(DefaultConfiguration.defaultRank.get());
         }
     }
 
@@ -238,7 +239,6 @@ public class PlayerRank extends Database {
         ranks.sort(Comparator.comparing(PlayerRank::position));
         for (int i = 0; i < ranks.size(); i++) {
             PlayerRank r = ranks.get(i);
-            if (r.displayName().equals(getDefaultRank().displayName())) continue;
             r.setPosition(i);
         }
     }

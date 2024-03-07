@@ -1,5 +1,6 @@
 package simpleranks;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import simpleranks.commands.RankCommand;
@@ -13,7 +14,7 @@ import simpleranks.system.ScoreboardSystem;
 import simpleranks.utils.Database;
 import simpleranks.utils.PermissionsManager;
 import simpleranks.utils.PlayerRank;
-import simpleranks.utils.PlayerRankPermissionGroup;
+import simpleranks.utils.PermissionGroup;
 import simpleranks.utils.config.DefaultConfiguration;
 
 import java.io.File;
@@ -27,9 +28,10 @@ public final class Simpleranks extends JavaPlugin {
         instance = this;
         data = this.getDataFolder().getPath();
 
-        if (!istPurpurServer() && !istPaperServer()) {
+        if (!isPurpurServer() && !isPaperServer()) {
             getLogger().severe("Plugin only supports Paper and Purpur!");
-            this.setEnabled(false);
+            getServer().getPluginManager().disablePlugin(this);
+            return;
         }
 
         initListeners();
@@ -39,16 +41,17 @@ public final class Simpleranks extends JavaPlugin {
         //Language.init();
         Database.init();
         PlayerRank.init();
-        PlayerRankPermissionGroup.init();
+        PermissionGroup.init();
         PermissionsManager.reload();
         ScoreboardSystem.reloadAll();
 
         getLogger().info("Loaded all ranks: " + PlayerRank.rankNames());
+        getLogger().info("Loaded all groups: " + PermissionGroup.groupNames());
         getLogger().info("Starting up...");
         getLogger().info("Testing...");
 
-        getLogger().info("Successful started Plugin version " + getPluginMeta().getVersion() + "!");
-        getLogger().info("Plugin created by - " + getPluginMeta().getAuthors());
+        getLogger().info("Successful started Plugin version " + getDescription().getVersion() + "!");
+        getLogger().info("Plugin created by - " + getDescription().getAuthors());
 
         Scheduler.start();
     }
@@ -80,11 +83,11 @@ public final class Simpleranks extends JavaPlugin {
         }
     }
 
-    private boolean istPaperServer() {
+    private boolean isPaperServer() {
         return getServer().getVersion().toLowerCase().contains("paper");
     }
 
-    private boolean istPurpurServer() {
+    private boolean isPurpurServer() {
         return getServer().getVersion().toLowerCase().contains("purpur");
     }
 

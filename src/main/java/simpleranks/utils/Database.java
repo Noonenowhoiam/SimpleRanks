@@ -42,7 +42,7 @@ public class Database {
                     ");");
 
             if (!databaseConnection.getMetaData().getColumns(null, null, "simpleranks_ranks", "group").next()) {
-                database.execute("ALTER TABLE \"simpleranks_ranks\" ADD \t\"group\"\t VARCHAR(2000);");
+                database.execute("ALTER TABLE \"simpleranks_ranks\" ADD \t\"group\"\t TEXT;");
             }
 
             database.executeUpdate("CREATE TABLE IF NOT EXISTS \"simpleranks_permission_groups\" (\n" +
@@ -68,8 +68,8 @@ public class Database {
 
     public static void shutdown() {
         try {
-            databaseConnection.close();
-            database.close();
+            if (databaseConnection != null) databaseConnection.close();
+            if (database != null) database.close();
         } catch (Exception e) { e.printStackTrace(); }
     }
 

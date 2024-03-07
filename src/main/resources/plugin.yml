@@ -33,3 +33,13 @@ permissions:
     default: op
   simpleranks.rank.info:
     default: op
+  simpleranks.group.list:
+    default: op
+  simpleranks.group.create:
+    default: op
+  simpleranks.group.delete:
+    default: op
+  simpleranks.group.modify:
+    default: op
+  simpleranks.group.info:
+    default: op

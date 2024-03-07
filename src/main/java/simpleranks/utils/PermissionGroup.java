@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class PlayerRankPermissionGroup extends Database {
+public class PermissionGroup extends Database {
 
     private long id;
 
-    public PlayerRankPermissionGroup(long id) {
+    public PermissionGroup(long id) {
         this.id = id;
     }
 
@@ -25,7 +25,7 @@ public class PlayerRankPermissionGroup extends Database {
         return new Gson().fromJson(json, new TypeToken<List<String>>() {}.getType());
     }
 
-    public static PlayerRankPermissionGroup newGroup(String name, List<String> permissions) {
+    public static PermissionGroup newGroup(String name, List<String> permissions) {
         long id = new Random().nextLong(); id = Math.abs(id) % 10000000000000000L;
         while (isGroupExistent(id)) { id = new Random().nextLong(); id = Math.abs(id) % 10000000000000000L; }
 
@@ -34,7 +34,7 @@ public class PlayerRankPermissionGroup extends Database {
         try {
             database.executeUpdate("INSERT INTO " + ranksPermissionGroupTable + " (`id`, `name`, `permissions`) VALUES ('" + id + "', '" + name + "', '" + convertPermissionListToJson(permissions) + "')");
         } catch (Exception e) { e.printStackTrace(); }
-        return PlayerRankPermissionGroup.get(id);
+        return PermissionGroup.get(id);
     }
 
     public static void deleteGroup(long id) {
@@ -44,17 +44,17 @@ public class PlayerRankPermissionGroup extends Database {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    public static PlayerRankPermissionGroup get(long id) {
-        return new PlayerRankPermissionGroup(id);
+    public static PermissionGroup get(long id) {
+        return new PermissionGroup(id);
     }
-    public static PlayerRankPermissionGroup get(String name) {
+    public static PermissionGroup get(String name) {
         try {
             ResultSet rs = database.executeQuery("SELECT * FROM " + ranksPermissionGroupTable + " WHERE name = '" + name + "';");
             String temp_id = null; if (rs.next()) { temp_id = rs.getString("id"); }
             rs.close();
             if (temp_id == null) return null;
             if (!JavaTools.isLong(temp_id)) return null; //TODO Fix nulls
-            return PlayerRankPermissionGroup.get(Long.valueOf(temp_id));
+            return PermissionGroup.get(Long.valueOf(temp_id));
         } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
@@ -107,15 +107,15 @@ public class PlayerRankPermissionGroup extends Database {
     }
 
 
-    public static List<PlayerRankPermissionGroup> groups() {
-        List<PlayerRankPermissionGroup> re = new ArrayList<>();
+    public static List<PermissionGroup> groups() {
+        List<PermissionGroup> re = new ArrayList<>();
         try {
             ResultSet rs = database.executeQuery("SELECT * FROM " + ranksPermissionGroupTable + ";");
             while (rs.next()) {
                 String tmp_id = rs.getString("id");
                 if (tmp_id == null) continue;
                 if (!JavaTools.isLong(tmp_id)) continue;
-                re.add(PlayerRankPermissionGroup.get(Long.valueOf(tmp_id)));
+                re.add(PermissionGroup.get(Long.valueOf(tmp_id)));
             }
             rs.close();
         } catch (Exception e) { e.printStackTrace(); }
@@ -149,11 +149,11 @@ public class PlayerRankPermissionGroup extends Database {
         return re;
     }
 
-    public static PlayerRankPermissionGroup getDefaultGroup() {
+    public static PermissionGroup getDefaultGroup() {
         if (!groupNames().contains(DefaultConfiguration.defaultPermissionGroup.get())) {
             return newGroup(DefaultConfiguration.defaultPermissionGroup.get(), new ArrayList<>());
         } else {
-            return PlayerRankPermissionGroup.get(DefaultConfiguration.defaultPermissionGroup.get());
+            return PermissionGroup.get(DefaultConfiguration.defaultPermissionGroup.get());
         }
     }
 
