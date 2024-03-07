@@ -22,9 +22,8 @@ public class PermissionsManager {
 
     public static void removePermissionFromPlayer(Player p, String permission) {
         if (!permissionAttachments.containsKey(p.getUniqueId())) return;
-        PermissionAttachment attachment = p.addAttachment(Simpleranks.instance);
+        PermissionAttachment attachment = permissionAttachments.get(p.getUniqueId());
         attachment.unsetPermission(permission);
-        permissionAttachments.put(p.getUniqueId(), attachment);
     }
 
 
